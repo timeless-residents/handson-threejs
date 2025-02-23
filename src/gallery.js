@@ -87,7 +87,7 @@ function createSceneCard(scene) {
   }
 
   card.addEventListener("click", () => {
-    window.location.href = `/scene.html?id=${scene.id}`;
+    window.location.href = `./scene.html?id=${scene.id}`;
   });
 
   return card;
