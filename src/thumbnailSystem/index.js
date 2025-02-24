@@ -24,7 +24,7 @@ async function collectMetadata() {
     }
   }
 
-  return sceneData.sort((a, b) => a.id.localeCompare(b.id));
+  return sceneData.sort((a, b) => b.id.localeCompare(a.id));
 }
 
 // サムネイル生成用のキューを管理するクラス
