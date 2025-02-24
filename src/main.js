@@ -1,4 +1,4 @@
-import { SceneManager } from "./core/SceneManager";
+import SceneManager from "./core/SceneManager";
 import { Renderer } from "./core/Renderer";
 import { Camera } from "./core/Camera";
 import * as THREE from "three";
