@@ -6,6 +6,9 @@ import * as THREE from "three";
 const manager = new SceneManager();
 const renderer = new Renderer();
 const camera = new Camera();
+// グローバル変数として公開（ユースケース側で取得可能にする）
+window.camera = camera;
+
 const clock = new THREE.Clock();
 
 // URLからシーンIDを取得
