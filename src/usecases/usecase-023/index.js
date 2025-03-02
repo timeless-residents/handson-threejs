@@ -22,7 +22,7 @@ export default class GeometryShowcase023 extends UseCaseBase {
   static setupScene(scene) {
     // シーンの背景色を設定（明るい色）
     scene.background = new THREE.Color(0xf5f5f5);
-    
+
     const objects = [];
     const geometries = [];
 
@@ -59,7 +59,7 @@ export default class GeometryShowcase023 extends UseCaseBase {
         fresnelScale: { value: 1.0 },
         fresnelPower: { value: 2.0 },
         opacity: { value: 0.6 },
-        envMap: { value: null }
+        envMap: { value: null },
       },
       vertexShader: `
         uniform float time;
@@ -107,7 +107,7 @@ export default class GeometryShowcase023 extends UseCaseBase {
       `,
       transparent: true,
       side: THREE.FrontSide,
-      depthWrite: false
+      depthWrite: false,
     });
 
     const glassSphere = new THREE.Mesh(glassGeometry, glassMaterial);
@@ -123,21 +123,21 @@ export default class GeometryShowcase023 extends UseCaseBase {
 
     // 内部オブジェクトの作成（シルエットとして見えるオブジェクト）
     const innerObjects = [];
-    
+
     // 様々な形状のオブジェクトを作成
     const shapes = [
       new THREE.TorusKnotGeometry(0.5, 0.2, 64, 16),
       new THREE.BoxGeometry(0.6, 0.6, 0.6),
       new THREE.ConeGeometry(0.5, 1, 16),
       new THREE.SphereGeometry(0.4, 32, 32),
-      new THREE.TetrahedronGeometry(0.5)
+      new THREE.TetrahedronGeometry(0.5),
     ];
     geometries.push(...shapes);
 
     // シルエットマテリアル（背面を黒く、前面を通常の色で表示）
     const silhouetteMaterial = new THREE.ShaderMaterial({
       uniforms: {
-        color: { value: new THREE.Color(0x444444) }
+        color: { value: new THREE.Color(0x444444) },
       },
       vertexShader: `
         varying vec3 vNormal;
@@ -170,7 +170,7 @@ export default class GeometryShowcase023 extends UseCaseBase {
           gl_FragColor = vec4(finalColor, 1.0);
         }
       `,
-      side: THREE.DoubleSide
+      side: THREE.DoubleSide,
     });
 
     // 内部オブジェクトを配置
@@ -182,26 +182,26 @@ export default class GeometryShowcase023 extends UseCaseBase {
         Math.random() * 0.5 + 0.3,
         Math.random() * 0.5 + 0.3
       );
-      
+
       const mesh = new THREE.Mesh(geometry, material);
-      
+
       // オブジェクトをランダムに配置
       const radius = Math.random() * 0.8 + 0.5;
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.random() * Math.PI;
-      
+
       mesh.position.set(
         radius * Math.sin(phi) * Math.cos(theta),
         radius * Math.cos(phi),
         radius * Math.sin(phi) * Math.sin(theta)
       );
-      
+
       mesh.rotation.set(
         Math.random() * Math.PI,
         Math.random() * Math.PI,
         Math.random() * Math.PI
       );
-      
+
       innerGroup.add(mesh);
       innerObjects.push(mesh);
     }
@@ -212,7 +212,7 @@ export default class GeometryShowcase023 extends UseCaseBase {
       color: 0xeeeeee,
       roughness: 0.8,
       metalness: 0.2,
-      side: THREE.DoubleSide
+      side: THREE.DoubleSide,
     });
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = Math.PI / 2;
@@ -227,11 +227,16 @@ export default class GeometryShowcase023 extends UseCaseBase {
       geometries,
       glassSphere,
       innerObjects,
-      innerGroup
+      innerGroup,
     };
   }
 
-  static updateObjects(objects, time = 0, mousePos = { x: 0, y: 0 }, params = {}) {
+  static updateObjects(
+    objects,
+    time = 0,
+    mousePos = { x: 0, y: 0 },
+    params = {}
+  ) {
     const { glassSphere, innerObjects, innerGroup } = params;
 
     if (!glassSphere || !innerObjects || !innerGroup) return;
@@ -244,7 +249,8 @@ export default class GeometryShowcase023 extends UseCaseBase {
     if (glassSphere.material.uniforms) {
       glassSphere.material.uniforms.time.value = time;
       // 時間によって屈折率を微妙に変化させる
-      glassSphere.material.uniforms.refractionRatio.value = 0.98 + Math.sin(time * 0.5) * 0.01;
+      glassSphere.material.uniforms.refractionRatio.value =
+        0.98 + Math.sin(time * 0.5) * 0.01;
     }
 
     // 内部オブジェクトの回転
@@ -256,12 +262,12 @@ export default class GeometryShowcase023 extends UseCaseBase {
       // 個別に回転
       obj.rotation.x += Math.sin(time * 0.2 + i) * 0.01;
       obj.rotation.y += Math.cos(time * 0.3 + i) * 0.01;
-      
+
       // 位置を微妙に変化させる
       const radius = 0.8 + Math.sin(time * 0.5 + i * 0.7) * 0.2;
       const theta = obj.userData.initialTheta + time * (0.1 + i * 0.05);
       const phi = obj.userData.initialPhi + Math.sin(time * 0.3 + i) * 0.2;
-      
+
       obj.position.x = radius * Math.sin(phi) * Math.cos(theta);
       obj.position.y = radius * Math.cos(phi);
       obj.position.z = radius * Math.sin(phi) * Math.sin(theta);
@@ -269,13 +275,14 @@ export default class GeometryShowcase023 extends UseCaseBase {
   }
 
   async init() {
-    const { objects, glassSphere, innerObjects, innerGroup } = GeometryShowcase023.setupScene(this.scene);
+    const { objects, glassSphere, innerObjects, innerGroup } =
+      GeometryShowcase023.setupScene(this.scene);
     objects.forEach((obj) => this.objects.add(obj));
-    
+
     this.glassSphere = glassSphere;
     this.innerObjects = innerObjects;
     this.innerGroup = innerGroup;
-    
+
     // 内部オブジェクトの初期角度を保存
     this.innerObjects.forEach((obj, i) => {
       obj.userData.initialTheta = Math.random() * Math.PI * 2;
@@ -285,7 +292,7 @@ export default class GeometryShowcase023 extends UseCaseBase {
 
   update(deltaTime) {
     this.time += deltaTime * this.rotationSpeed;
-    
+
     GeometryShowcase023.updateObjects(
       Array.from(this.objects),
       this.time,
@@ -293,7 +300,7 @@ export default class GeometryShowcase023 extends UseCaseBase {
       {
         glassSphere: this.glassSphere,
         innerObjects: this.innerObjects,
-        innerGroup: this.innerGroup
+        innerGroup: this.innerGroup,
       }
     );
   }
@@ -321,7 +328,8 @@ export default class GeometryShowcase023 extends UseCaseBase {
 
     const scene = new THREE.Scene();
 
-    const { objects, geometries, glassSphere, innerObjects, innerGroup } = this.setupScene(scene);
+    const { objects, geometries, glassSphere, innerObjects, innerGroup } =
+      this.setupScene(scene);
     let time = 0;
 
     const animate = () => {
@@ -422,8 +430,8 @@ export default class GeometryShowcase023 extends UseCaseBase {
     // Unicode対応のためのエンコード
     const encodedSvg = unescape(encodeURIComponent(svgString));
     const dataURL = "data:image/svg+xml;base64," + btoa(encodedSvg);
-    
+
     // Promiseを確実に返す
-    return fetch(dataURL).then(res => res.blob());
+    return fetch(dataURL).then((res) => res.blob());
   }
 }
