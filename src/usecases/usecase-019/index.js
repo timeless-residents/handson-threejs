@@ -66,7 +66,7 @@ export default class GeometryShowcase019 extends UseCaseBase {
       // 距離に基づいて色を選択
       const distanceFromCenter = Math.sqrt(x * x + y * y + z * z);
       const normalizedDistance = distanceFromCenter / radius;
-      
+
       // 色をブレンド
       const colorIndex = Math.min(
         Math.floor(normalizedDistance * colorPalette.length),
@@ -74,7 +74,7 @@ export default class GeometryShowcase019 extends UseCaseBase {
       );
       const nextColorIndex = (colorIndex + 1) % colorPalette.length;
       const blendFactor = normalizedDistance * colorPalette.length - colorIndex;
-      
+
       const color = new THREE.Color().copy(colorPalette[colorIndex]);
       color.lerp(colorPalette[nextColorIndex], blendFactor);
 
@@ -86,9 +86,15 @@ export default class GeometryShowcase019 extends UseCaseBase {
       sizes[i] = 0.1 + Math.random() * 0.3;
     }
 
-    particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    particleGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-    particleGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+    particleGeometry.setAttribute(
+      "position",
+      new THREE.BufferAttribute(positions, 3)
+    );
+    particleGeometry.setAttribute(
+      "color",
+      new THREE.BufferAttribute(colors, 3)
+    );
+    particleGeometry.setAttribute("size", new THREE.BufferAttribute(sizes, 1));
 
     // シェーダーマテリアルを作成
     const particleMaterial = new THREE.PointsMaterial({
@@ -137,9 +143,15 @@ export default class GeometryShowcase019 extends UseCaseBase {
       starColors[i * 3 + 2] = starColor.b;
     }
 
-    starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
-    starGeometry.setAttribute('size', new THREE.BufferAttribute(starSizes, 1));
-    starGeometry.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
+    starGeometry.setAttribute(
+      "position",
+      new THREE.BufferAttribute(starPositions, 3)
+    );
+    starGeometry.setAttribute("size", new THREE.BufferAttribute(starSizes, 1));
+    starGeometry.setAttribute(
+      "color",
+      new THREE.BufferAttribute(starColors, 3)
+    );
 
     const starMaterial = new THREE.PointsMaterial({
       size: 0.05,
@@ -174,16 +186,23 @@ export default class GeometryShowcase019 extends UseCaseBase {
     objects.push(rayLight);
     geometries.push(rayGeometry);
 
-    return { 
-      objects, 
-      geometries, 
-      particles, 
-      starField, 
-      rayLight 
+    return {
+      objects,
+      geometries,
+      particles,
+      starField,
+      rayLight,
     };
   }
 
-  static updateObjects(objects, particles, starField, rayLight, time, mouse = { x: 0, y: 0 }) {
+  static updateObjects(
+    objects,
+    particles,
+    starField,
+    rayLight,
+    time,
+    mouse = { x: 0, y: 0 }
+  ) {
     if (!particles || !starField || !rayLight) return;
 
     // 星雲の動き
@@ -196,7 +215,7 @@ export default class GeometryShowcase019 extends UseCaseBase {
 
     // 星の点滅
     starField.rotation.y = time * 0.02;
-    
+
     // マウス位置に基づいてライトレイを動かす
     if (rayLight) {
       rayLight.rotation.x = Math.PI / 2 + mouse.y * 0.5;
@@ -206,16 +225,15 @@ export default class GeometryShowcase019 extends UseCaseBase {
   }
 
   async init() {
-    const { objects, particles, starField, rayLight } = GeometryShowcase019.setupScene(
-      this.scene
-    );
+    const { objects, particles, starField, rayLight } =
+      GeometryShowcase019.setupScene(this.scene);
     objects.forEach((obj) => this.objects.add(obj));
     this.particles = particles;
     this.starField = starField;
     this.rayLight = rayLight;
-    
+
     // マウスイベントを追加
-    window.addEventListener('mousemove', this.handleMouseMove.bind(this));
+    window.addEventListener("mousemove", this.handleMouseMove.bind(this));
   }
 
   handleMouseMove(event) {
@@ -239,7 +257,7 @@ export default class GeometryShowcase019 extends UseCaseBase {
   dispose() {
     super.dispose();
     // イベントリスナーを削除
-    window.removeEventListener('mousemove', this.handleMouseMove.bind(this));
+    window.removeEventListener("mousemove", this.handleMouseMove.bind(this));
   }
 
   static getThumbnailCameraPosition() {
@@ -256,7 +274,7 @@ export default class GeometryShowcase019 extends UseCaseBase {
       <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
         <rect width="200" height="200" fill="#000510"/>
         
-        <!-- 小さな星 -->
+        <!-- Small Stars -->
         <g fill="#FFFFFF" opacity="0.8">
           <circle cx="20" cy="30" r="1" />
           <circle cx="40" cy="50" r="1.2" />
@@ -287,13 +305,13 @@ export default class GeometryShowcase019 extends UseCaseBase {
           <circle cx="190" cy="150" r="0.8" />
         </g>
         
-        <!-- 星雲の中心 -->
+        <!-- Nebula Center -->
         <ellipse cx="100" cy="100" rx="50" ry="40" fill="url(#nebula-gradient)" opacity="0.7" />
         
-        <!-- 青い光線 -->
+        <!-- Blue Light Ray -->
         <path d="M80,100 L60,150 L140,150 L120,100 Z" fill="#3366FF" opacity="0.4" />
         
-        <!-- 粒子のようなドット -->
+        <!-- Particle Dots -->
         <g fill="#9955FF" opacity="0.8">
           <circle cx="85" cy="90" r="2" />
           <circle cx="95" cy="85" r="3" />
@@ -320,7 +338,7 @@ export default class GeometryShowcase019 extends UseCaseBase {
           <circle cx="120" cy="115" r="1.5" />
         </g>
         
-        <!-- グラデーション定義 -->
+        <!-- Gradient Definition -->
         <defs>
           <radialGradient id="nebula-gradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
             <stop offset="0%" stop-color="#9955FF" stop-opacity="0.9"/>
@@ -332,8 +350,9 @@ export default class GeometryShowcase019 extends UseCaseBase {
       </svg>
     `;
 
-    // Base64エンコードされたデータURLを作成
-    const dataURL = "data:image/svg+xml;base64," + btoa(svgString);
+    // Unicode対応のためのエンコード処理
+    const encodedSvg = unescape(encodeURIComponent(svgString));
+    const dataURL = "data:image/svg+xml;base64," + btoa(encodedSvg);
 
     // Blobオブジェクトに変換して返す
     return fetch(dataURL).then((res) => res.blob());
@@ -353,7 +372,8 @@ export default class GeometryShowcase019 extends UseCaseBase {
 
     const scene = new THREE.Scene();
 
-    const { objects, geometries, particles, starField, rayLight } = this.setupScene(scene);
+    const { objects, geometries, particles, starField, rayLight } =
+      this.setupScene(scene);
     let time = 0;
 
     // プレビュー用のマウス制御
@@ -364,7 +384,7 @@ export default class GeometryShowcase019 extends UseCaseBase {
       mouse.y = -((event.clientY - rect.top) / height) * 2 + 1;
     };
 
-    container.addEventListener('mousemove', handleMouseMove);
+    container.addEventListener("mousemove", handleMouseMove);
 
     const animate = () => {
       time += 0.016;
@@ -379,7 +399,14 @@ export default class GeometryShowcase019 extends UseCaseBase {
       element: renderer.domElement,
       animate: () => {
         time += 0.016;
-        this.updateObjects(objects, particles, starField, rayLight, time, mouse);
+        this.updateObjects(
+          objects,
+          particles,
+          starField,
+          rayLight,
+          time,
+          mouse
+        );
         renderer.render(scene, camera);
       },
       dispose: () => {
@@ -393,7 +420,7 @@ export default class GeometryShowcase019 extends UseCaseBase {
             }
           }
         });
-        container.removeEventListener('mousemove', handleMouseMove);
+        container.removeEventListener("mousemove", handleMouseMove);
         renderer.dispose();
       },
     };

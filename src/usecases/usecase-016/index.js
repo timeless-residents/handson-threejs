@@ -110,6 +110,68 @@ export default class GeometryShowcase016 extends UseCaseBase {
     GeometryShowcase016.updateObjects(Array.from(this.objects), this.time);
   }
 
+  static getThumbnailCameraPosition() {
+    return {
+      position: [4, 4, 4],
+      target: [0, 0, 0],
+    };
+  }
+
+  static getThumbnailBlob() {
+    // Create a simple SVG representation of a crystal formation with connecting lines
+    const svgString = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+        <rect width="200" height="200" fill="#111111"/>
+        
+        <!-- Rainbow gradient for color transitions -->
+        <defs>
+          <linearGradient id="crystal-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#ff0000" stop-opacity="0.8"/>
+            <stop offset="25%" stop-color="#00ff00" stop-opacity="0.8"/>
+            <stop offset="50%" stop-color="#0000ff" stop-opacity="0.8"/>
+            <stop offset="75%" stop-color="#ff00ff" stop-opacity="0.8"/>
+            <stop offset="100%" stop-color="#ffff00" stop-opacity="0.8"/>
+          </linearGradient>
+        </defs>
+        
+        <!-- Connecting lines -->
+        <g opacity="0.3" stroke="#ffffff" stroke-width="1">
+          <line x1="100" y1="100" x2="140" y2="60"/>
+          <line x1="100" y1="100" x2="60" y2="60"/>
+          <line x1="100" y1="100" x2="140" y2="140"/>
+          <line x1="100" y1="100" x2="60" y2="140"/>
+          <line x1="100" y1="100" x2="140" y2="100"/>
+          <line x1="100" y1="100" x2="60" y2="100"/>
+          <line x1="100" y1="100" x2="100" y2="60"/>
+          <line x1="100" y1="100" x2="100" y2="140"/>
+        </g>
+        
+        <!-- Crystal tetrahedrons -->
+        <g fill="url(#crystal-gradient)" stroke="#ffffff" stroke-width="1">
+          <!-- Center crystal -->
+          <polygon points="100,90 110,100 90,100 100,110" fill="#ffffff" opacity="0.9"/>
+          
+          <!-- Surrounding crystals -->
+          <polygon points="140,50 150,60 130,60 140,70" fill="#ff3366" opacity="0.8"/>
+          <polygon points="60,50 70,60 50,60 60,70" fill="#33ff66" opacity="0.8"/>
+          <polygon points="140,130 150,140 130,140 140,150" fill="#6633ff" opacity="0.8"/>
+          <polygon points="60,130 70,140 50,140 60,150" fill="#ff9933" opacity="0.8"/>
+          <polygon points="140,90 150,100 130,100 140,110" fill="#33ffff" opacity="0.8"/>
+          <polygon points="60,90 70,100 50,100 60,110" fill="#ff33ff" opacity="0.8"/>
+          <polygon points="100,50 110,60 90,60 100,70" fill="#ffff33" opacity="0.8"/>
+          <polygon points="100,130 110,140 90,140 100,150" fill="#3366ff" opacity="0.8"/>
+        </g>
+      </svg>
+    `;
+
+    // Unicode-safe encoding
+    const encodedSvg = unescape(encodeURIComponent(svgString));
+    const dataURL = "data:image/svg+xml;base64," + btoa(encodedSvg);
+
+    // Convert to Blob
+    return fetch(dataURL).then((res) => res.blob());
+  }
+
   static createPreview(container) {
     const width = container.clientWidth;
     const height = container.clientHeight;

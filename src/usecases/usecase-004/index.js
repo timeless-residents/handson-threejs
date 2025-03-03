@@ -68,6 +68,47 @@ export default class GeometryShowcase004 extends UseCaseBase {
     );
   }
 
+  static getThumbnailCameraPosition() {
+    return {
+      position: [0, 2, 8],
+      target: [0, 0, 0],
+    };
+  }
+
+  static getThumbnailBlob() {
+    // Create a simple SVG representation of a cyan cylinder with a red marker
+    const svgString = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+        <rect width="200" height="200" fill="#111111"/>
+        
+        <!-- Grid representation -->
+        <line x1="50" y1="150" x2="150" y2="150" stroke="#444444" stroke-width="1"/>
+        <line x1="70" y1="150" x2="70" y2="140" stroke="#444444" stroke-width="1"/>
+        <line x1="90" y1="150" x2="90" y2="140" stroke="#444444" stroke-width="1"/>
+        <line x1="110" y1="150" x2="110" y2="140" stroke="#444444" stroke-width="1"/>
+        <line x1="130" y1="150" x2="130" y2="140" stroke="#444444" stroke-width="1"/>
+        
+        <!-- Cylinder representation -->
+        <ellipse cx="100" cy="70" rx="40" ry="15" fill="#00ffff" opacity="0.8"/>
+        <rect x="60" y="70" width="80" height="60" fill="#00ffff"/>
+        <ellipse cx="100" cy="130" rx="40" ry="15" fill="#00cccc"/>
+        
+        <!-- Red marker -->
+        <rect x="135" y="95" width="10" height="10" fill="#ff0000"/>
+        
+        <!-- Highlight on cylinder -->
+        <ellipse cx="85" cy="70" rx="10" ry="5" fill="#ffffff" opacity="0.3"/>
+      </svg>
+    `;
+
+    // Unicode-safe encoding
+    const encodedSvg = unescape(encodeURIComponent(svgString));
+    const dataURL = "data:image/svg+xml;base64," + btoa(encodedSvg);
+
+    // Convert to Blob
+    return fetch(dataURL).then((res) => res.blob());
+  }
+
   static createPreview(container) {
     const width = container.clientWidth;
     const height = container.clientHeight;

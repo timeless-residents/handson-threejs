@@ -48,6 +48,37 @@ export default class GeometryShowcase002 extends UseCaseBase {
     );
   }
 
+  static getThumbnailCameraPosition() {
+    return {
+      position: [0, 2, 8],
+      target: [0, 0, 0],
+    };
+  }
+
+  static getThumbnailBlob() {
+    // Create a simple SVG representation of a blue torus
+    const svgString = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+        <rect width="200" height="200" fill="#111111"/>
+        
+        <!-- Torus representation -->
+        <ellipse cx="100" cy="100" rx="60" ry="25" fill="none" stroke="#0000ff" stroke-width="20" />
+        <ellipse cx="100" cy="100" rx="60" ry="25" fill="none" stroke="#0066ff" stroke-width="10" />
+        <ellipse cx="100" cy="100" rx="60" ry="25" fill="none" stroke="#0099ff" stroke-width="5" />
+        
+        <!-- Highlight -->
+        <ellipse cx="80" cy="85" rx="10" ry="5" fill="#ffffff" opacity="0.3" />
+      </svg>
+    `;
+
+    // Unicode-safe encoding
+    const encodedSvg = unescape(encodeURIComponent(svgString));
+    const dataURL = "data:image/svg+xml;base64," + btoa(encodedSvg);
+
+    // Convert to Blob
+    return fetch(dataURL).then((res) => res.blob());
+  }
+
   static createPreview(container) {
     const width = container.clientWidth;
     const height = container.clientHeight;

@@ -48,6 +48,35 @@ export default class GeometryShowcase000 extends UseCaseBase {
     );
   }
 
+  static getThumbnailCameraPosition() {
+    return {
+      position: [0, 2, 8],
+      target: [0, 0, 0],
+    };
+  }
+
+  static getThumbnailBlob() {
+    // Create a simple SVG representation of a red cube
+    const svgString = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+        <rect width="200" height="200" fill="#111111"/>
+        
+        <!-- Cube faces -->
+        <polygon points="100,70 140,90 140,130 100,150 60,130 60,90" fill="#ff0000" stroke="#ffffff" stroke-width="1"/>
+        <polygon points="100,70 140,90 100,110 60,90" fill="#ff3333" stroke="#ffffff" stroke-width="1"/>
+        <polygon points="100,110 140,90 140,130 100,150" fill="#cc0000" stroke="#ffffff" stroke-width="1"/>
+        <polygon points="100,110 100,150 60,130 60,90" fill="#aa0000" stroke="#ffffff" stroke-width="1"/>
+      </svg>
+    `;
+
+    // Unicode-safe encoding
+    const encodedSvg = unescape(encodeURIComponent(svgString));
+    const dataURL = "data:image/svg+xml;base64," + btoa(encodedSvg);
+
+    // Convert to Blob
+    return fetch(dataURL).then((res) => res.blob());
+  }
+
   static createPreview(container) {
     const width = container.clientWidth;
     const height = container.clientHeight;

@@ -49,6 +49,40 @@ export default class GeometryShowcase009 extends UseCaseBase {
     );
   }
 
+  static getThumbnailCameraPosition() {
+    return {
+      position: [0, 2, 8],
+      target: [0, 0, 0],
+    };
+  }
+
+  static getThumbnailBlob() {
+    // Create a simple SVG representation of an orange torus knot
+    const svgString = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+        <rect width="200" height="200" fill="#111111"/>
+        
+        <!-- Torus knot representation -->
+        <path d="M60,100 C60,60 100,60 100,100 S140,140 140,100 S100,60 100,100 S60,140 60,100 Z" 
+              fill="none" stroke="#ff8800" stroke-width="12" stroke-linecap="round"/>
+        
+        <path d="M60,100 C60,60 100,60 100,100 S140,140 140,100 S100,60 100,100 S60,140 60,100 Z" 
+              fill="none" stroke="#ffaa00" stroke-width="6" stroke-linecap="round"/>
+        
+        <!-- Highlight -->
+        <path d="M80,80 C90,70 100,70 110,80" 
+              fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+      </svg>
+    `;
+
+    // Unicode-safe encoding
+    const encodedSvg = unescape(encodeURIComponent(svgString));
+    const dataURL = "data:image/svg+xml;base64," + btoa(encodedSvg);
+
+    // Convert to Blob
+    return fetch(dataURL).then((res) => res.blob());
+  }
+
   static createPreview(container) {
     const width = container.clientWidth;
     const height = container.clientHeight;

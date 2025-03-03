@@ -71,6 +71,57 @@ export default class GeometryShowcase012 extends UseCaseBase {
     GeometryShowcase012.updateObjects(Array.from(this.objects), this.time);
   }
 
+  static getThumbnailCameraPosition() {
+    return {
+      position: [0, 2, 12],
+      target: [0, 0, 0],
+    };
+  }
+
+  static getThumbnailBlob() {
+    // Create a simple SVG representation of animated geometric shapes with color transitions
+    const svgString = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+        <rect width="200" height="200" fill="#111111"/>
+        
+        <!-- Rainbow gradient for color transitions -->
+        <defs>
+          <linearGradient id="rainbow" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#ff0000"/>
+            <stop offset="16.6%" stop-color="#ff8800"/>
+            <stop offset="33.3%" stop-color="#ffff00"/>
+            <stop offset="50%" stop-color="#00ff00"/>
+            <stop offset="66.6%" stop-color="#0088ff"/>
+            <stop offset="83.3%" stop-color="#0000ff"/>
+            <stop offset="100%" stop-color="#ff00ff"/>
+          </linearGradient>
+        </defs>
+        
+        <!-- Cube (left) -->
+        <g transform="translate(50, 100)">
+          <polygon points="0,0 -20,-20 -20,-40 0,-20" fill="url(#rainbow)" opacity="0.9" stroke="#ffffff" stroke-width="1"/>
+          <polygon points="0,0 0,-20 20,-40 20,-20" fill="url(#rainbow)" opacity="0.7" stroke="#ffffff" stroke-width="1"/>
+          <polygon points="0,-20 -20,-40 20,-40 20,-20" fill="url(#rainbow)" opacity="0.8" stroke="#ffffff" stroke-width="1"/>
+        </g>
+        
+        <!-- Sphere (center) -->
+        <circle cx="100" cy="100" r="25" fill="url(#rainbow)" opacity="0.9" stroke="#ffffff" stroke-width="1"/>
+        <circle cx="90" cy="90" r="8" fill="#ffffff" opacity="0.3"/>
+        
+        <!-- Torus (right) -->
+        <ellipse cx="150" cy="100" rx="25" ry="10" fill="none" stroke="url(#rainbow)" stroke-width="10" opacity="0.9"/>
+        <ellipse cx="150" cy="100" rx="25" ry="10" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.5"/>
+      </svg>
+    `;
+
+    // Unicode-safe encoding
+    const encodedSvg = unescape(encodeURIComponent(svgString));
+    const dataURL = "data:image/svg+xml;base64," + btoa(encodedSvg);
+
+    // Convert to Blob
+    return fetch(dataURL).then((res) => res.blob());
+  }
+
   static createPreview(container) {
     const width = container.clientWidth;
     const height = container.clientHeight;

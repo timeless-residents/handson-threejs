@@ -55,8 +55,21 @@ export class ThumbnailRenderer {
         if (object.geometry) object.geometry.dispose();
       }
 
+      // カメラの位置を設定
+      if (typeof SceneClass.getThumbnailCameraPosition === "function") {
+        const cameraSettings = SceneClass.getThumbnailCameraPosition();
+        this.camera.position.set(...cameraSettings.position);
+        this.camera.lookAt(...cameraSettings.target);
+      } else {
+        // デフォルトのカメラ位置
+        this.camera.position.set(0, 2, 8);
+        this.camera.lookAt(0, 0, 0);
+      }
+
       // シーンのセットアップ
-      const { objects, lights } = SceneClass.setupScene(this.scene);
+      const result = SceneClass.setupScene(this.scene);
+      const objects = result.objects || [];
+      const lights = result.lights || [];
 
       if (typeof SceneClass.updateObjects === "function") {
         SceneClass.updateObjects(objects, 1.0);

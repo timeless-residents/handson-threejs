@@ -70,6 +70,66 @@ export default class GeometryShowcase014 extends UseCaseBase {
     GeometryShowcase014.updateObjects(Array.from(this.objects), this.time);
   }
 
+  static getThumbnailCameraPosition() {
+    return {
+      position: [8, 8, 8],
+      target: [0, 0, 0],
+    };
+  }
+
+  static getThumbnailBlob() {
+    // Create a simple SVG representation of concentric rings with dynamic colors
+    const svgString = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+        <rect width="200" height="200" fill="#111111"/>
+        
+        <!-- Rainbow gradient for color transitions -->
+        <defs>
+          <linearGradient id="rainbow-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#ff0000"/>
+            <stop offset="16.6%" stop-color="#ff8800"/>
+            <stop offset="33.3%" stop-color="#ffff00"/>
+            <stop offset="50%" stop-color="#00ff00"/>
+            <stop offset="66.6%" stop-color="#0088ff"/>
+            <stop offset="83.3%" stop-color="#0000ff"/>
+            <stop offset="100%" stop-color="#ff00ff"/>
+          </linearGradient>
+        </defs>
+        
+        <!-- Concentric rings with different colors and rotations -->
+        <g transform="translate(100, 100)">
+          <!-- Ring 1 (innermost) -->
+          <ellipse cx="0" cy="0" rx="20" ry="10" fill="none" stroke="#ff0000" stroke-width="3" transform="rotate(0)"/>
+          
+          <!-- Ring 2 -->
+          <ellipse cx="0" cy="0" rx="30" ry="15" fill="none" stroke="#ff8800" stroke-width="3" transform="rotate(15)"/>
+          
+          <!-- Ring 3 -->
+          <ellipse cx="0" cy="0" rx="40" ry="20" fill="none" stroke="#ffff00" stroke-width="3" transform="rotate(30)"/>
+          
+          <!-- Ring 4 -->
+          <ellipse cx="0" cy="0" rx="50" ry="25" fill="none" stroke="#00ff00" stroke-width="3" transform="rotate(45)"/>
+          
+          <!-- Ring 5 -->
+          <ellipse cx="0" cy="0" rx="60" ry="30" fill="none" stroke="#00ffff" stroke-width="3" transform="rotate(60)"/>
+          
+          <!-- Ring 6 -->
+          <ellipse cx="0" cy="0" rx="70" ry="35" fill="none" stroke="#0000ff" stroke-width="3" transform="rotate(75)"/>
+          
+          <!-- Ring 7 (outermost) -->
+          <ellipse cx="0" cy="0" rx="80" ry="40" fill="none" stroke="#ff00ff" stroke-width="3" transform="rotate(90)"/>
+        </g>
+      </svg>
+    `;
+
+    // Unicode-safe encoding
+    const encodedSvg = unescape(encodeURIComponent(svgString));
+    const dataURL = "data:image/svg+xml;base64," + btoa(encodedSvg);
+
+    // Convert to Blob
+    return fetch(dataURL).then((res) => res.blob());
+  }
+
   static createPreview(container) {
     const width = container.clientWidth;
     const height = container.clientHeight;

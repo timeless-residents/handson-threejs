@@ -48,6 +48,38 @@ export default class GeometryShowcase008 extends UseCaseBase {
     );
   }
 
+  static getThumbnailCameraPosition() {
+    return {
+      position: [0, 2, 8],
+      target: [0, 0, 0],
+    };
+  }
+
+  static getThumbnailBlob() {
+    // Create a simple SVG representation of a purple dodecahedron
+    const svgString = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+        <rect width="200" height="200" fill="#111111"/>
+        
+        <!-- Dodecahedron representation (simplified) -->
+        <polygon points="100,60 130,80 120,120 80,120 70,80" fill="#8800ff" stroke="#ffffff" stroke-width="1"/>
+        <polygon points="70,80 80,120 60,140 50,100" fill="#7700dd" stroke="#ffffff" stroke-width="1"/>
+        <polygon points="130,80 150,100 140,140 120,120" fill="#6600bb" stroke="#ffffff" stroke-width="1"/>
+        <polygon points="80,120 120,120 110,150 90,150" fill="#5500aa" stroke="#ffffff" stroke-width="1"/>
+        
+        <!-- Highlight -->
+        <polygon points="100,60 110,70 90,70" fill="#ffffff" opacity="0.3"/>
+      </svg>
+    `;
+
+    // Unicode-safe encoding
+    const encodedSvg = unescape(encodeURIComponent(svgString));
+    const dataURL = "data:image/svg+xml;base64," + btoa(encodedSvg);
+
+    // Convert to Blob
+    return fetch(dataURL).then((res) => res.blob());
+  }
+
   static createPreview(container) {
     const width = container.clientWidth;
     const height = container.clientHeight;

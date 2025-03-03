@@ -48,6 +48,39 @@ export default class GeometryShowcase005 extends UseCaseBase {
     );
   }
 
+  static getThumbnailCameraPosition() {
+    return {
+      position: [0, 2, 8],
+      target: [0, 0, 0],
+    };
+  }
+
+  static getThumbnailBlob() {
+    // Create a simple SVG representation of a magenta cone
+    const svgString = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+        <rect width="200" height="200" fill="#111111"/>
+        
+        <!-- Cone representation -->
+        <polygon points="100,60 140,140 60,140" fill="#ff00ff" />
+        <ellipse cx="100" cy="140" rx="40" ry="10" fill="#cc00cc" />
+        
+        <!-- Highlight -->
+        <polygon points="100,60 120,100 80,100" fill="#ffffff" opacity="0.3" />
+        
+        <!-- Shadow -->
+        <ellipse cx="100" cy="160" rx="30" ry="5" fill="#000000" opacity="0.3" />
+      </svg>
+    `;
+
+    // Unicode-safe encoding
+    const encodedSvg = unescape(encodeURIComponent(svgString));
+    const dataURL = "data:image/svg+xml;base64," + btoa(encodedSvg);
+
+    // Convert to Blob
+    return fetch(dataURL).then((res) => res.blob());
+  }
+
   static createPreview(container) {
     const width = container.clientWidth;
     const height = container.clientHeight;

@@ -44,7 +44,36 @@ class ThumbnailManager {
     // 新しいサムネイル生成タスクを作成
     const thumbnailPromise = (async () => {
       try {
+        // まず、クラスの静的メソッドとしてgetThumbnailBlobが存在するか確認
         if (typeof scene.module.getThumbnailBlob === "function") {
+          try {
+            // 静的メソッドを直接呼び出す
+            const thumbnailBlob = await scene.module.getThumbnailBlob();
+
+            if (thumbnailBlob) {
+              scene.thumbnailUrl = URL.createObjectURL(thumbnailBlob);
+              scene.thumbnailGenerated = true;
+              return scene.thumbnailUrl;
+            }
+          } catch (error) {
+            // SVGエンコードエラーの場合、フォールバックとしてレンダラーを使用
+            console.warn(
+              `Error generating thumbnail with getThumbnailBlob: ${error.message}`
+            );
+            console.warn("Falling back to renderer for thumbnail generation");
+
+            const thumbnailBlob = await this.queue.add(async (renderer) => {
+              return await renderer.generateThumbnail(scene.module, 200, 200);
+            });
+
+            if (thumbnailBlob) {
+              scene.thumbnailUrl = URL.createObjectURL(thumbnailBlob);
+              scene.thumbnailGenerated = true;
+              return scene.thumbnailUrl;
+            }
+          }
+        } else {
+          // 静的メソッドがない場合はレンダラーを使用
           const thumbnailBlob = await this.queue.add(async (renderer) => {
             return await renderer.generateThumbnail(scene.module, 200, 200);
           });

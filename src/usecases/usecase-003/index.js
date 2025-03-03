@@ -49,6 +49,46 @@ export default class GeometryShowcase003 extends UseCaseBase {
     );
   }
 
+  static getThumbnailCameraPosition() {
+    return {
+      position: [0, 2, 8],
+      target: [0, 0, 0],
+    };
+  }
+
+  static getThumbnailBlob() {
+    // Create a simple SVG representation of a yellow sphere
+    const svgString = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+        <rect width="200" height="200" fill="#111111"/>
+        
+        <!-- Sphere representation -->
+        <circle cx="100" cy="100" r="60" fill="#ffff00" />
+        
+        <!-- Shading to give 3D effect -->
+        <circle cx="100" cy="100" r="60" fill="url(#sphere-gradient)" />
+        
+        <!-- Highlight -->
+        <circle cx="80" cy="80" r="15" fill="#ffffff" opacity="0.3" />
+        
+        <!-- Gradient definition -->
+        <defs>
+          <radialGradient id="sphere-gradient" cx="40%" cy="40%" r="60%" fx="40%" fy="40%">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.3"/>
+            <stop offset="100%" stop-color="#000000" stop-opacity="0.5"/>
+          </radialGradient>
+        </defs>
+      </svg>
+    `;
+
+    // Unicode-safe encoding
+    const encodedSvg = unescape(encodeURIComponent(svgString));
+    const dataURL = "data:image/svg+xml;base64," + btoa(encodedSvg);
+
+    // Convert to Blob
+    return fetch(dataURL).then((res) => res.blob());
+  }
+
   static createPreview(container) {
     const width = container.clientWidth;
     const height = container.clientHeight;

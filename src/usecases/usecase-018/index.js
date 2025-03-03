@@ -182,7 +182,7 @@ export default class GeometryShowcase018 extends UseCaseBase {
         <rect x="90" y="80" width="20" height="80" fill="#222222"/>
         <rect x="120" y="60" width="40" height="100" fill="#222222"/>
         
-        <!-- 窓の光 -->
+        <!-- Window Lights -->
         <rect x="55" y="50" width="5" height="5" fill="#ffcc66" opacity="0.9"/>
         <rect x="65" y="50" width="5" height="5" fill="#ffcc66" opacity="0.8"/>
         <rect x="55" y="70" width="5" height="5" fill="#ffcc66" opacity="0.7"/>
@@ -212,8 +212,9 @@ export default class GeometryShowcase018 extends UseCaseBase {
       </svg>
     `;
 
-    // Base64エンコードされたデータURLを作成
-    const dataURL = "data:image/svg+xml;base64," + btoa(svgString);
+    // Unicode対応のためのエンコード処理
+    const encodedSvg = unescape(encodeURIComponent(svgString));
+    const dataURL = "data:image/svg+xml;base64," + btoa(encodedSvg);
 
     // Blobオブジェクトに変換して返す
     return fetch(dataURL).then((res) => res.blob());

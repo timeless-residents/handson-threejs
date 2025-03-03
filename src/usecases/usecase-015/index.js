@@ -84,6 +84,73 @@ export default class GeometryShowcase015 extends UseCaseBase {
     GeometryShowcase015.updateObjects(Array.from(this.objects), this.time);
   }
 
+  static getThumbnailCameraPosition() {
+    return {
+      position: [8, 10, 8],
+      target: [0, 5, 0],
+    };
+  }
+
+  static getThumbnailBlob() {
+    // Create a simple SVG representation of a spiral tower with rotating elements
+    const svgString = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+        <rect width="200" height="200" fill="#111111"/>
+        
+        <!-- Rainbow gradient for color transitions -->
+        <defs>
+          <linearGradient id="rainbow-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#ff0000"/>
+            <stop offset="16.6%" stop-color="#ff8800"/>
+            <stop offset="33.3%" stop-color="#ffff00"/>
+            <stop offset="50%" stop-color="#00ff00"/>
+            <stop offset="66.6%" stop-color="#0088ff"/>
+            <stop offset="83.3%" stop-color="#0000ff"/>
+            <stop offset="100%" stop-color="#ff00ff"/>
+          </linearGradient>
+        </defs>
+        
+        <!-- Spiral tower with octahedrons -->
+        <g transform="translate(100, 180) scale(0.8)">
+          <!-- Level 1 (bottom) -->
+          <polygon points="0,-10 10,0 0,10 -10,0" fill="#ff0000" stroke="#ffffff" stroke-width="1" transform="translate(30, -20)"/>
+          
+          <!-- Level 2 -->
+          <polygon points="0,-10 10,0 0,10 -10,0" fill="#ff8800" stroke="#ffffff" stroke-width="1" transform="translate(20, -40)"/>
+          
+          <!-- Level 3 -->
+          <polygon points="0,-10 10,0 0,10 -10,0" fill="#ffff00" stroke="#ffffff" stroke-width="1" transform="translate(0, -60)"/>
+          
+          <!-- Level 4 -->
+          <polygon points="0,-10 10,0 0,10 -10,0" fill="#00ff00" stroke="#ffffff" stroke-width="1" transform="translate(-20, -80)"/>
+          
+          <!-- Level 5 -->
+          <polygon points="0,-10 10,0 0,10 -10,0" fill="#00ffff" stroke="#ffffff" stroke-width="1" transform="translate(-30, -100)"/>
+          
+          <!-- Level 6 -->
+          <polygon points="0,-10 10,0 0,10 -10,0" fill="#0000ff" stroke="#ffffff" stroke-width="1" transform="translate(-20, -120)"/>
+          
+          <!-- Level 7 -->
+          <polygon points="0,-10 10,0 0,10 -10,0" fill="#8800ff" stroke="#ffffff" stroke-width="1" transform="translate(0, -140)"/>
+          
+          <!-- Level 8 (top) -->
+          <polygon points="0,-10 10,0 0,10 -10,0" fill="#ff00ff" stroke="#ffffff" stroke-width="1" transform="translate(20, -160)"/>
+          
+          <!-- Spiral path (background) -->
+          <path d="M30,-20 C25,-30 20,-40 0,-60 C-20,-80 -30,-100 -20,-120 C-10,-130 0,-140 20,-160" 
+                fill="none" stroke="#ffffff" stroke-width="1" stroke-dasharray="5,5" opacity="0.3"/>
+        </g>
+      </svg>
+    `;
+
+    // Unicode-safe encoding
+    const encodedSvg = unescape(encodeURIComponent(svgString));
+    const dataURL = "data:image/svg+xml;base64," + btoa(encodedSvg);
+
+    // Convert to Blob
+    return fetch(dataURL).then((res) => res.blob());
+  }
+
   static createPreview(container) {
     const width = container.clientWidth;
     const height = container.clientHeight;

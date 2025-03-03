@@ -47,6 +47,36 @@ export default class GeometryShowcase001 extends UseCaseBase {
     );
   }
 
+  static getThumbnailCameraPosition() {
+    return {
+      position: [0, 2, 8],
+      target: [0, 0, 0],
+    };
+  }
+
+  static getThumbnailBlob() {
+    // Create a simple SVG representation of a green icosahedron
+    const svgString = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+        <rect width="200" height="200" fill="#111111"/>
+        
+        <!-- Icosahedron faces (simplified representation) -->
+        <polygon points="100,60 130,90 110,130 90,130 70,90" fill="#00ff00" stroke="#ffffff" stroke-width="1"/>
+        <polygon points="100,60 70,90 50,70 80,50" fill="#00dd00" stroke="#ffffff" stroke-width="1"/>
+        <polygon points="100,60 80,50 120,50" fill="#00cc00" stroke="#ffffff" stroke-width="1"/>
+        <polygon points="100,60 120,50 150,70 130,90" fill="#00bb00" stroke="#ffffff" stroke-width="1"/>
+        <polygon points="90,130 110,130 100,150" fill="#009900" stroke="#ffffff" stroke-width="1"/>
+      </svg>
+    `;
+
+    // Unicode-safe encoding
+    const encodedSvg = unescape(encodeURIComponent(svgString));
+    const dataURL = "data:image/svg+xml;base64," + btoa(encodedSvg);
+
+    // Convert to Blob
+    return fetch(dataURL).then((res) => res.blob());
+  }
+
   static createPreview(container) {
     const width = container.clientWidth;
     const height = container.clientHeight;

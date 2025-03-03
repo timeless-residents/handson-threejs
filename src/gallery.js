@@ -25,6 +25,7 @@ function createSceneCard(scene) {
 
   // サムネイルの遅延読み込み
   const loadThumbnail = async () => {
+    console.log("シーンクラス名:", scene.module.name);
     const previewDiv = card.querySelector(".scene-preview");
     const thumbnailUrl = await scene.loadThumbnail();
 

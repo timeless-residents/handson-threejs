@@ -22,7 +22,7 @@ export default class GeometryShowcase020 extends UseCaseBase {
   static setupScene(scene) {
     // 薄い青色の背景（冬の空）
     scene.background = new THREE.Color(0xb0c4de);
-    
+
     // フォグを追加して遠くを霞ませる（雪景色の表現）
     scene.fog = new THREE.FogExp2(0xb0c4de, 0.035);
 
@@ -93,20 +93,21 @@ export default class GeometryShowcase020 extends UseCaseBase {
       });
     }
 
-    snowGeometry.setAttribute('position', new THREE.BufferAttribute(snowPositions, 3));
-    snowGeometry.setAttribute('size', new THREE.BufferAttribute(snowSizes, 1));
+    snowGeometry.setAttribute(
+      "position",
+      new THREE.BufferAttribute(snowPositions, 3)
+    );
+    snowGeometry.setAttribute("size", new THREE.BufferAttribute(snowSizes, 1));
 
     // 雪のテクスチャを作成（通常は画像を使用しますが、ここではコードで生成）
-    const snowCanvas = document.createElement('canvas');
+    const snowCanvas = document.createElement("canvas");
     snowCanvas.width = 32;
     snowCanvas.height = 32;
-    const snowContext = snowCanvas.getContext('2d');
-    const gradient = snowContext.createRadialGradient(
-      16, 16, 0, 16, 16, 16
-    );
-    gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
-    gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.8)');
-    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    const snowContext = snowCanvas.getContext("2d");
+    const gradient = snowContext.createRadialGradient(16, 16, 0, 16, 16, 16);
+    gradient.addColorStop(0, "rgba(255, 255, 255, 1)");
+    gradient.addColorStop(0.5, "rgba(255, 255, 255, 0.8)");
+    gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
     snowContext.fillStyle = gradient;
     snowContext.fillRect(0, 0, 32, 32);
 
@@ -131,18 +132,18 @@ export default class GeometryShowcase020 extends UseCaseBase {
     // 木を追加
     const trees = [];
     const treeCount = 15;
-    
+
     for (let i = 0; i < treeCount; i++) {
       const tree = createTree();
-      
+
       // ランダムな位置に配置
       const x = (Math.random() - 0.5) * 25;
       const z = (Math.random() - 0.5) * 25;
       const scale = 0.5 + Math.random() * 1;
-      
+
       tree.position.set(x, 0, z);
       tree.scale.set(scale, scale, scale);
-      
+
       scene.add(tree);
       objects.push(tree);
       trees.push(tree);
@@ -152,86 +153,99 @@ export default class GeometryShowcase020 extends UseCaseBase {
     for (let i = 0; i < 10; i++) {
       const hillGeometry = new THREE.SphereGeometry(
         0.5 + Math.random() * 2, // サイズをランダムに
-        16, 16,
-        0, Math.PI * 2,
-        0, Math.PI / 2 // 半球形
+        16,
+        16,
+        0,
+        Math.PI * 2,
+        0,
+        Math.PI / 2 // 半球形
       );
-      
+
       const hillMaterial = new THREE.MeshStandardMaterial({
         color: 0xffffff,
         roughness: 0.9,
         metalness: 0.1,
       });
-      
+
       const hill = new THREE.Mesh(hillGeometry, hillMaterial);
-      
+
       // ランダムな位置に配置
       const x = (Math.random() - 0.5) * 25;
       const z = (Math.random() - 0.5) * 25;
-      
+
       hill.position.set(x, 0, z);
       hill.castShadow = true;
       hill.receiveShadow = true;
-      
+
       scene.add(hill);
       objects.push(hill);
       geometries.push(hillGeometry);
     }
 
-    return { 
-      objects, 
-      geometries, 
+    return {
+      objects,
+      geometries,
       snowParticles,
       snowVelocities,
       ground,
-      trees
+      trees,
     };
   }
 
-  static updateObjects(objects, snowParticles, snowVelocities, ground, trees, time, wind = { x: 0.2, z: 0.1 }) {
+  static updateObjects(
+    objects,
+    snowParticles,
+    snowVelocities,
+    ground,
+    trees,
+    time,
+    wind = { x: 0.2, z: 0.1 }
+  ) {
     if (!snowParticles || !snowVelocities) return;
 
     // 雪の位置を更新
     const positions = snowParticles.geometry.attributes.position.array;
-    
+
     for (let i = 0; i < positions.length / 3; i++) {
       // 現在の位置
       let x = positions[i * 3];
       let y = positions[i * 3 + 1];
       let z = positions[i * 3 + 2];
-      
+
       // 速度に風の影響を加える
-      const vx = snowVelocities[i].x + wind.x * 0.001 * Math.sin(time * 0.5 + i * 0.1);
+      const vx =
+        snowVelocities[i].x + wind.x * 0.001 * Math.sin(time * 0.5 + i * 0.1);
       const vy = snowVelocities[i].y;
-      const vz = snowVelocities[i].z + wind.z * 0.001 * Math.cos(time * 0.5 + i * 0.1);
-      
+      const vz =
+        snowVelocities[i].z + wind.z * 0.001 * Math.cos(time * 0.5 + i * 0.1);
+
       // 位置を更新
       x += vx;
       y += vy;
       z += vz;
-      
+
       // 地面に着いたら、再度上から降らせる
       if (y < 0.05) {
         y = 20;
         x = (Math.random() - 0.5) * 30;
         z = (Math.random() - 0.5) * 30;
       }
-      
+
       // 範囲外に出たら反対側から
       if (x < -15) x = 15;
       if (x > 15) x = -15;
       if (z < -15) z = 15;
       if (z > 15) z = -15;
-      
+
       // 更新した位置を設定
       positions[i * 3] = x;
       positions[i * 3 + 1] = y;
       positions[i * 3 + 2] = z;
     }
-    
+
     // 更新された位置をGPUに転送
     snowParticles.geometry.attributes.position.needsUpdate = true;
-    
+
     // 木を風でわずかに揺らす
     trees.forEach((tree, index) => {
       tree.rotation.z = Math.sin(time * 0.5 + index) * 0.03 * wind.x;
@@ -240,9 +254,8 @@ export default class GeometryShowcase020 extends UseCaseBase {
   }
 
   async init() {
-    const { objects, snowParticles, snowVelocities, ground, trees } = GeometryShowcase020.setupScene(
-      this.scene
-    );
+    const { objects, snowParticles, snowVelocities, ground, trees } =
+      GeometryShowcase020.setupScene(this.scene);
     objects.forEach((obj) => this.objects.add(obj));
     this.snowParticles = snowParticles;
     this.snowVelocities = snowVelocities;
@@ -277,32 +290,32 @@ export default class GeometryShowcase020 extends UseCaseBase {
       <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
         <rect width="200" height="200" fill="#b0c4de"/>
         
-        <!-- 地面（雪） -->
+        <!-- Ground (Snow) -->
         <rect x="0" y="150" width="200" height="50" fill="#ffffff"/>
         
-        <!-- 雪の丘 -->
+        <!-- Snow Hills -->
         <ellipse cx="30" cy="150" rx="25" ry="10" fill="#f0f0f0"/>
         <ellipse cx="140" cy="150" rx="30" ry="12" fill="#f0f0f0"/>
         
-        <!-- 木1 -->
+        <!-- Tree 1 -->
         <rect x="40" y="120" width="6" height="30" fill="#8b4513"/>
         <polygon points="25,120 65,120 45,90" fill="#2f4f4f"/>
         <polygon points="30,100 60,100 45,75" fill="#2f4f4f"/>
         <polygon points="35,80 55,80 45,60" fill="#2f4f4f"/>
         
-        <!-- 木2 -->
+        <!-- Tree 2 -->
         <rect x="100" y="100" width="8" height="50" fill="#8b4513"/>
         <polygon points="80,100 130,100 105,65" fill="#2f4f4f"/>
         <polygon points="85,75 125,75 105,45" fill="#2f4f4f"/>
         <polygon points="90,55 120,55 105,30" fill="#2f4f4f"/>
         
-        <!-- 木3 -->
+        <!-- Tree 3 -->
         <rect x="155" y="110" width="5" height="40" fill="#8b4513"/>
         <polygon points="140,110 175,110 157,85" fill="#2f4f4f"/>
         <polygon points="145,90 170,90 157,70" fill="#2f4f4f"/>
         <polygon points="150,75 165,75 157,55" fill="#2f4f4f"/>
         
-        <!-- 雪の粒子 -->
+        <!-- Snow Particles -->
         <g fill="#ffffff" opacity="0.8">
           <circle cx="20" cy="30" r="1.5" />
           <circle cx="40" cy="50" r="1.2" />
@@ -331,8 +344,9 @@ export default class GeometryShowcase020 extends UseCaseBase {
       </svg>
     `;
 
-    // Base64エンコードされたデータURLを作成
-    const dataURL = "data:image/svg+xml;base64," + btoa(svgString);
+    // Unicode対応のためのエンコード処理
+    const encodedSvg = unescape(encodeURIComponent(svgString));
+    const dataURL = "data:image/svg+xml;base64," + btoa(encodedSvg);
 
     // Blobオブジェクトに変換して返す
     return fetch(dataURL).then((res) => res.blob());
@@ -354,12 +368,26 @@ export default class GeometryShowcase020 extends UseCaseBase {
 
     const scene = new THREE.Scene();
 
-    const { objects, geometries, snowParticles, snowVelocities, ground, trees } = this.setupScene(scene);
+    const {
+      objects,
+      geometries,
+      snowParticles,
+      snowVelocities,
+      ground,
+      trees,
+    } = this.setupScene(scene);
     let time = 0;
 
     const animate = () => {
       time += 0.016;
-      this.updateObjects(objects, snowParticles, snowVelocities, ground, trees, time);
+      this.updateObjects(
+        objects,
+        snowParticles,
+        snowVelocities,
+        ground,
+        trees,
+        time
+      );
       renderer.render(scene, camera);
     };
 
@@ -370,7 +398,14 @@ export default class GeometryShowcase020 extends UseCaseBase {
       element: renderer.domElement,
       animate: () => {
         time += 0.016;
-        this.updateObjects(objects, snowParticles, snowVelocities, ground, trees, time);
+        this.updateObjects(
+          objects,
+          snowParticles,
+          snowVelocities,
+          ground,
+          trees,
+          time
+        );
         renderer.render(scene, camera);
       },
       dispose: () => {
@@ -393,7 +428,7 @@ export default class GeometryShowcase020 extends UseCaseBase {
 // 木を作成するヘルパー関数
 function createTree() {
   const treeGroup = new THREE.Group();
-  
+
   // 幹
   const trunkGeometry = new THREE.CylinderGeometry(0.2, 0.3, 1.5, 8);
   const trunkMaterial = new THREE.MeshStandardMaterial({
@@ -404,34 +439,34 @@ function createTree() {
   trunk.position.y = 0.75;
   trunk.castShadow = true;
   treeGroup.add(trunk);
-  
+
   // 葉（円錐を重ねる）
   const leafMaterial = new THREE.MeshStandardMaterial({
     color: 0x2f4f4f, // 暗い緑（冬の松の色）
     roughness: 0.8,
   });
-  
+
   // 一番下の葉
   const leafGeometry1 = new THREE.ConeGeometry(1, 1.5, 8);
   const leaf1 = new THREE.Mesh(leafGeometry1, leafMaterial);
   leaf1.position.y = 1.5;
   leaf1.castShadow = true;
   treeGroup.add(leaf1);
-  
+
   // 中間の葉
   const leafGeometry2 = new THREE.ConeGeometry(0.8, 1.2, 8);
   const leaf2 = new THREE.Mesh(leafGeometry2, leafMaterial);
   leaf2.position.y = 2.3;
   leaf2.castShadow = true;
   treeGroup.add(leaf2);
-  
+
   // 一番上の葉
   const leafGeometry3 = new THREE.ConeGeometry(0.6, 1, 8);
   const leaf3 = new THREE.Mesh(leafGeometry3, leafMaterial);
   leaf3.position.y = 3;
   leaf3.castShadow = true;
   treeGroup.add(leaf3);
-  
+
   // 雪をのせる（円錐の先端を白く）
   const snowCapGeometry1 = new THREE.ConeGeometry(1.05, 0.2, 8);
   const snowCapMaterial = new THREE.MeshStandardMaterial({
@@ -441,16 +476,16 @@ function createTree() {
   const snowCap1 = new THREE.Mesh(snowCapGeometry1, snowCapMaterial);
   snowCap1.position.y = 1.55;
   treeGroup.add(snowCap1);
-  
+
   const snowCapGeometry2 = new THREE.ConeGeometry(0.85, 0.2, 8);
   const snowCap2 = new THREE.Mesh(snowCapGeometry2, snowCapMaterial);
   snowCap2.position.y = 2.35;
   treeGroup.add(snowCap2);
-  
+
   const snowCapGeometry3 = new THREE.ConeGeometry(0.65, 0.2, 8);
   const snowCap3 = new THREE.Mesh(snowCapGeometry3, snowCapMaterial);
   snowCap3.position.y = 3.05;
   treeGroup.add(snowCap3);
-  
+
   return treeGroup;
 }

@@ -66,6 +66,45 @@ export default class GeometryShowcase010 extends UseCaseBase {
     );
   }
 
+  static getThumbnailCameraPosition() {
+    return {
+      position: [0, 2, 8],
+      target: [0, 0, 0],
+    };
+  }
+
+  static getThumbnailBlob() {
+    // Create a simple SVG representation of a red cube and green sphere
+    const svgString = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+        <rect width="200" height="200" fill="#111111"/>
+        
+        <!-- Red cube -->
+        <g transform="translate(70, 100)">
+          <!-- Front face -->
+          <polygon points="0,0 -30,-30 -30,-60 0,-30" fill="#ff4444" stroke="#ffffff" stroke-width="1"/>
+          <!-- Right face -->
+          <polygon points="0,0 0,-30 30,-60 30,-30" fill="#cc3333" stroke="#ffffff" stroke-width="1"/>
+          <!-- Top face -->
+          <polygon points="0,-30 -30,-60 30,-60 30,-30" fill="#aa2222" stroke="#ffffff" stroke-width="1"/>
+        </g>
+        
+        <!-- Green sphere -->
+        <circle cx="130" cy="100" r="30" fill="#44ff44" stroke="#ffffff" stroke-width="1"/>
+        
+        <!-- Sphere highlight -->
+        <circle cx="120" cy="90" r="10" fill="#ffffff" opacity="0.3"/>
+      </svg>
+    `;
+
+    // Unicode-safe encoding
+    const encodedSvg = unescape(encodeURIComponent(svgString));
+    const dataURL = "data:image/svg+xml;base64," + btoa(encodedSvg);
+
+    // Convert to Blob
+    return fetch(dataURL).then((res) => res.blob());
+  }
+
   static createPreview(container) {
     const width = container.clientWidth;
     const height = container.clientHeight;

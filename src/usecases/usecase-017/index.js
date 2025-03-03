@@ -77,7 +77,7 @@ export default class GeometryShowcase017 extends UseCaseBase {
     const ringCount = 8;
 
     // If initialPositions is not provided, calculate them based on current positions
-    const positions = initialPositions || objects.map(obj => obj.position.y);
+    const positions = initialPositions || objects.map((obj) => obj.position.y);
 
     for (let i = 0; i < ringCount; i++) {
       const index = i * 2;
@@ -122,68 +122,46 @@ export default class GeometryShowcase017 extends UseCaseBase {
     };
   }
 
-  // Direct implementation of getThumbnailBlob to ensure it works correctly
-  static async getThumbnailBlob(width = 200, height = 200) {
-    try {
-      // Create an offscreen renderer
-      const renderer = new THREE.WebGLRenderer({
-        antialias: true,
-        preserveDrawingBuffer: true,
-      });
-      renderer.setSize(width, height);
+  static getThumbnailBlob() {
+    // Create a simple SVG representation of a ring-cut cylinder pattern
+    const svgString = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+        <rect width="200" height="200" fill="#111111"/>
+        
+        <!-- Cylinder with ring cuts -->
+        <defs>
+          <linearGradient id="cylinder-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#333333"/>
+            <stop offset="50%" stop-color="#666666"/>
+            <stop offset="100%" stop-color="#333333"/>
+          </linearGradient>
+        </defs>
+        
+        <!-- Base cylinder -->
+        <rect x="80" y="40" width="40" height="120" rx="20" ry="20" fill="url(#cylinder-gradient)"/>
+        
+        <!-- Colored rings -->
+        <rect x="80" y="50" width="40" height="10" fill="#ff3366" rx="5" ry="5"/>
+        <rect x="80" y="70" width="40" height="10" fill="#ff9933" rx="5" ry="5"/>
+        <rect x="80" y="90" width="40" height="10" fill="#ffff33" rx="5" ry="5"/>
+        <rect x="80" y="110" width="40" height="10" fill="#33ff66" rx="5" ry="5"/>
+        <rect x="80" y="130" width="40" height="10" fill="#3399ff" rx="5" ry="5"/>
+        
+        <!-- Highlights -->
+        <rect x="85" y="50" width="5" height="10" fill="#ffffff" opacity="0.3" rx="2" ry="2"/>
+        <rect x="85" y="70" width="5" height="10" fill="#ffffff" opacity="0.3" rx="2" ry="2"/>
+        <rect x="85" y="90" width="5" height="10" fill="#ffffff" opacity="0.3" rx="2" ry="2"/>
+        <rect x="85" y="110" width="5" height="10" fill="#ffffff" opacity="0.3" rx="2" ry="2"/>
+        <rect x="85" y="130" width="5" height="10" fill="#ffffff" opacity="0.3" rx="2" ry="2"/>
+      </svg>
+    `;
 
-      // Setup camera
-      const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 1000);
-      camera.position.set(4, 2, 4);
-      camera.lookAt(0, 0, 0);
+    // Unicode-safe encoding
+    const encodedSvg = unescape(encodeURIComponent(svgString));
+    const dataURL = "data:image/svg+xml;base64," + btoa(encodedSvg);
 
-      // Setup scene
-      const scene = new THREE.Scene();
-      scene.background = new THREE.Color(0x111111);
-
-      // Add lights
-      const ambientLight = new THREE.AmbientLight(0x404040);
-      const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-      directionalLight.position.set(5, 5, 5);
-      scene.add(ambientLight, directionalLight);
-
-      // Setup scene objects
-      const { objects, geometries } = this.setupScene(scene);
-      
-      // Store initial positions for animation
-      const initialPositions = objects.map(obj => obj.position.y);
-
-      // Use updateObjects for animation with initial positions
-      this.updateObjects(objects, 1.0, initialPositions);
-
-      // Render the scene
-      renderer.render(scene, camera);
-
-      // Get the thumbnail as data URL and convert to blob
-      const dataURL = renderer.domElement.toDataURL("image/png");
-      const response = await fetch(dataURL);
-      const blob = await response.blob();
-
-      // Cleanup
-      objects.forEach((obj) => {
-        if (obj.geometry) obj.geometry.dispose();
-        if (obj.material) {
-          if (Array.isArray(obj.material)) {
-            obj.material.forEach((mat) => mat.dispose());
-          } else {
-            obj.material.dispose();
-          }
-        }
-      });
-
-      geometries.forEach(g => g.dispose());
-      renderer.dispose();
-
-      return blob;
-    } catch (error) {
-      console.warn(`Failed to generate thumbnail: ${error.message}`);
-      throw error;
-    }
+    // Convert to Blob
+    return fetch(dataURL).then((res) => res.blob());
   }
 
   static createPreview(container) {

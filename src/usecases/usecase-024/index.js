@@ -5,7 +5,8 @@ export default class GeometryShowcase024 extends UseCaseBase {
   static metadata = {
     id: "024",
     title: "Cup-like Object",
-    description: "円柱を作り、上端だけスケールダウンしてコップ風オブジェクトを作成",
+    description:
+      "円柱を作り、上端だけスケールダウンしてコップ風オブジェクトを作成",
     categories: ["Geometry", "Modification", "Custom"],
   };
 
@@ -87,97 +88,100 @@ export default class GeometryShowcase024 extends UseCaseBase {
   static createCupGeometry(radius, height, segments) {
     // 基本の円柱ジオメトリを作成
     const cylinderGeometry = new THREE.CylinderGeometry(
-      radius,  // 上部の半径
-      radius,  // 下部の半径
-      height,  // 高さ
+      radius, // 上部の半径
+      radius, // 下部の半径
+      height, // 高さ
       segments, // 円周の分割数
-      1,       // 高さ方向の分割数
-      true     // 上下の蓋を開ける
+      1, // 高さ方向の分割数
+      true // 上下の蓋を開ける
     );
 
     // 上部の頂点をスケールダウンするための係数
     const topScaleFactor = 0.7;
-    
+
     // 頂点位置を取得
     const positions = cylinderGeometry.attributes.position.array;
-    
+
     // 上部の頂点を特定してスケールダウン
     for (let i = 0; i < positions.length; i += 3) {
       // Y座標が上部（高さの半分）に近い頂点を特定
       if (positions[i + 1] > height / 2 - 0.01) {
         // X座標とZ座標をスケールダウン
-        positions[i] *= topScaleFactor;     // X
+        positions[i] *= topScaleFactor; // X
         positions[i + 2] *= topScaleFactor; // Z
       }
     }
-    
+
     // 法線を再計算
     cylinderGeometry.computeVertexNormals();
-    
+
     // 底面を追加
     const bottomGeometry = new THREE.CircleGeometry(radius, segments);
     bottomGeometry.rotateX(Math.PI / 2);
     bottomGeometry.translate(0, -height / 2, 0);
-    
+
     // 上面を追加（スケールダウンした半径で）
-    const topGeometry = new THREE.CircleGeometry(radius * topScaleFactor, segments);
+    const topGeometry = new THREE.CircleGeometry(
+      radius * topScaleFactor,
+      segments
+    );
     topGeometry.rotateX(-Math.PI / 2);
     topGeometry.translate(0, height / 2, 0);
-    
+
     // ジオメトリをマージ
     const mergedGeometry = this.mergeGeometries([
       cylinderGeometry,
       bottomGeometry,
-      topGeometry
+      topGeometry,
     ]);
-    
+
     return mergedGeometry;
   }
-  
+
   // ジオメトリをマージするヘルパーメソッド
   static mergeGeometries(geometries) {
     const mergedGeometry = new THREE.BufferGeometry();
-    
+
     let vertexCount = 0;
     let indexCount = 0;
-    
+
     // 頂点数とインデックス数を計算
-    geometries.forEach(geometry => {
+    geometries.forEach((geometry) => {
       vertexCount += geometry.attributes.position.count;
       if (geometry.index) {
         indexCount += geometry.index.count;
       }
     });
-    
+
     // 新しい配列を作成
     const positions = new Float32Array(vertexCount * 3);
     const normals = new Float32Array(vertexCount * 3);
     const uvs = new Float32Array(vertexCount * 2);
     let indices = null;
-    
+
     if (indexCount > 0) {
       // インデックスの型を決定（頂点数に応じて）
       const indexType = vertexCount > 65535 ? Uint32Array : Uint16Array;
       indices = new indexType(indexCount);
     }
-    
+
     let vertexOffset = 0;
     let indexOffset = 0;
-    
+
     // 各ジオメトリのデータをマージ
-    geometries.forEach(geometry => {
+    geometries.forEach((geometry) => {
       const positionAttr = geometry.attributes.position;
       const normalAttr = geometry.attributes.normal;
       const uvAttr = geometry.attributes.uv;
       const index = geometry.index;
-      
+
       // 頂点位置をコピー
       for (let i = 0; i < positionAttr.count; i++) {
         positions[(vertexOffset + i) * 3] = positionAttr.array[i * 3];
         positions[(vertexOffset + i) * 3 + 1] = positionAttr.array[i * 3 + 1];
         positions[(vertexOffset + i) * 3 + 2] = positionAttr.array[i * 3 + 2];
       }
-      
+
       // 法線をコピー
       if (normalAttr) {
         for (let i = 0; i < normalAttr.count; i++) {
@@ -186,7 +190,7 @@ export default class GeometryShowcase024 extends UseCaseBase {
           normals[(vertexOffset + i) * 3 + 2] = normalAttr.array[i * 3 + 2];
         }
       }
-      
+
       // UVをコピー
       if (uvAttr) {
         for (let i = 0; i < uvAttr.count; i++) {
@@ -194,7 +198,7 @@ export default class GeometryShowcase024 extends UseCaseBase {
           uvs[(vertexOffset + i) * 2 + 1] = uvAttr.array[i * 2 + 1];
         }
       }
-      
+
       // インデックスをコピー（頂点オフセットを加算）
       if (index) {
         for (let i = 0; i < index.count; i++) {
@@ -202,29 +206,40 @@ export default class GeometryShowcase024 extends UseCaseBase {
         }
         indexOffset += index.count;
       }
-      
+
       vertexOffset += positionAttr.count;
     });
-    
+
     // 属性を設定
-    mergedGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    mergedGeometry.setAttribute('normal', new THREE.BufferAttribute(normals, 3));
-    mergedGeometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
-    
+    mergedGeometry.setAttribute(
+      "position",
+      new THREE.BufferAttribute(positions, 3)
+    );
+    mergedGeometry.setAttribute(
+      "normal",
+      new THREE.BufferAttribute(normals, 3)
+    );
+    mergedGeometry.setAttribute("uv", new THREE.BufferAttribute(uvs, 2));
+
     if (indices) {
       mergedGeometry.setIndex(new THREE.BufferAttribute(indices, 1));
     }
-    
+
     return mergedGeometry;
   }
 
-  static updateObjects(objects, time = 0, mousePos = { x: 0, y: 0 }, params = {}) {
+  static updateObjects(
+    objects,
+    time = 0,
+    mousePos = { x: 0, y: 0 },
+    params = {}
+  ) {
     const { cup } = params;
-    
+
     if (cup) {
       // コップを回転
       cup.rotation.y = time * 0.5;
-      
+
       // 少し傾ける
       cup.rotation.x = Math.sin(time * 0.3) * 0.2;
       cup.rotation.z = Math.cos(time * 0.2) * 0.1;
@@ -239,7 +254,7 @@ export default class GeometryShowcase024 extends UseCaseBase {
 
   update(deltaTime) {
     this.time += deltaTime * this.rotationSpeed;
-    
+
     GeometryShowcase024.updateObjects(
       Array.from(this.objects),
       this.time,
@@ -307,6 +322,7 @@ export default class GeometryShowcase024 extends UseCaseBase {
   }
 
   static getThumbnailBlob() {
+    console.log("WipeTransitionSequencer.generateThumbnail が呼ばれました");
     // SVGデータ - コップ風オブジェクトを表現
     const svgString = `
       <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">

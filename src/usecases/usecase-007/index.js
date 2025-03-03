@@ -48,6 +48,51 @@ export default class GeometryShowcase007 extends UseCaseBase {
     );
   }
 
+  static getThumbnailCameraPosition() {
+    return {
+      position: [0, 2, 8],
+      target: [0, 0, 0],
+    };
+  }
+
+  static getThumbnailBlob() {
+    // Create a simple SVG representation of a color-changing octahedron
+    const svgString = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+        <rect width="200" height="200" fill="#111111"/>
+        
+        <!-- Octahedron representation with rainbow gradient -->
+        <defs>
+          <linearGradient id="rainbow" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#ff0000"/>
+            <stop offset="16.6%" stop-color="#ff8800"/>
+            <stop offset="33.3%" stop-color="#ffff00"/>
+            <stop offset="50%" stop-color="#00ff00"/>
+            <stop offset="66.6%" stop-color="#0088ff"/>
+            <stop offset="83.3%" stop-color="#0000ff"/>
+            <stop offset="100%" stop-color="#ff00ff"/>
+          </linearGradient>
+        </defs>
+        
+        <!-- Top pyramid -->
+        <polygon points="100,60 140,100 100,100 60,100" fill="url(#rainbow)" stroke="#ffffff" stroke-width="1"/>
+        
+        <!-- Bottom pyramid -->
+        <polygon points="100,140 140,100 100,100 60,100" fill="url(#rainbow)" opacity="0.8" stroke="#ffffff" stroke-width="1"/>
+        
+        <!-- Highlight -->
+        <polygon points="100,60 110,80 90,80" fill="#ffffff" opacity="0.3"/>
+      </svg>
+    `;
+
+    // Unicode-safe encoding
+    const encodedSvg = unescape(encodeURIComponent(svgString));
+    const dataURL = "data:image/svg+xml;base64," + btoa(encodedSvg);
+
+    // Convert to Blob
+    return fetch(dataURL).then((res) => res.blob());
+  }
+
   static createPreview(container) {
     const width = container.clientWidth;
     const height = container.clientHeight;

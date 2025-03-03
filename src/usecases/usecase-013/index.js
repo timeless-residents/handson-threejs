@@ -78,6 +78,68 @@ export default class GeometryShowcase013 extends UseCaseBase {
     GeometryShowcase013.updateObjects(Array.from(this.objects), this.time);
   }
 
+  static getThumbnailCameraPosition() {
+    return {
+      position: [10, 10, 10],
+      target: [0, 0, 0],
+    };
+  }
+
+  static getThumbnailBlob() {
+    // Create a simple SVG representation of a grid of cubes in a wave pattern
+    const svgString = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+        <rect width="200" height="200" fill="#111111"/>
+        
+        <!-- Rainbow gradient for color transitions -->
+        <defs>
+          <linearGradient id="rainbow-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#ff0000"/>
+            <stop offset="20%" stop-color="#ffff00"/>
+            <stop offset="40%" stop-color="#00ff00"/>
+            <stop offset="60%" stop-color="#00ffff"/>
+            <stop offset="80%" stop-color="#0000ff"/>
+            <stop offset="100%" stop-color="#ff00ff"/>
+          </linearGradient>
+        </defs>
+        
+        <!-- Grid of cubes with wave pattern -->
+        <g transform="translate(100, 100) rotate(45)">
+          <!-- Row 1 -->
+          <rect x="-60" y="-60" width="20" height="20" fill="#ff0000" stroke="#ffffff" stroke-width="1" opacity="0.8"/>
+          <rect x="-30" y="-70" width="20" height="20" fill="#ff8800" stroke="#ffffff" stroke-width="1" opacity="0.8"/>
+          <rect x="0" y="-60" width="20" height="20" fill="#ffff00" stroke="#ffffff" stroke-width="1" opacity="0.8"/>
+          <rect x="30" y="-50" width="20" height="20" fill="#88ff00" stroke="#ffffff" stroke-width="1" opacity="0.8"/>
+          
+          <!-- Row 2 -->
+          <rect x="-60" y="-30" width="20" height="20" fill="#00ff00" stroke="#ffffff" stroke-width="1" opacity="0.8"/>
+          <rect x="-30" y="-40" width="20" height="20" fill="#00ff88" stroke="#ffffff" stroke-width="1" opacity="0.8"/>
+          <rect x="0" y="-30" width="20" height="20" fill="#00ffff" stroke="#ffffff" stroke-width="1" opacity="0.8"/>
+          <rect x="30" y="-20" width="20" height="20" fill="#0088ff" stroke="#ffffff" stroke-width="1" opacity="0.8"/>
+          
+          <!-- Row 3 -->
+          <rect x="-60" y="0" width="20" height="20" fill="#0000ff" stroke="#ffffff" stroke-width="1" opacity="0.8"/>
+          <rect x="-30" y="-10" width="20" height="20" fill="#8800ff" stroke="#ffffff" stroke-width="1" opacity="0.8"/>
+          <rect x="0" y="0" width="20" height="20" fill="#ff00ff" stroke="#ffffff" stroke-width="1" opacity="0.8"/>
+          <rect x="30" y="10" width="20" height="20" fill="#ff0088" stroke="#ffffff" stroke-width="1" opacity="0.8"/>
+          
+          <!-- Row 4 -->
+          <rect x="-60" y="30" width="20" height="20" fill="#ff0044" stroke="#ffffff" stroke-width="1" opacity="0.8"/>
+          <rect x="-30" y="20" width="20" height="20" fill="#ff4400" stroke="#ffffff" stroke-width="1" opacity="0.8"/>
+          <rect x="0" y="30" width="20" height="20" fill="#ffaa00" stroke="#ffffff" stroke-width="1" opacity="0.8"/>
+          <rect x="30" y="40" width="20" height="20" fill="#aaff00" stroke="#ffffff" stroke-width="1" opacity="0.8"/>
+        </g>
+      </svg>
+    `;
+
+    // Unicode-safe encoding
+    const encodedSvg = unescape(encodeURIComponent(svgString));
+    const dataURL = "data:image/svg+xml;base64," + btoa(encodedSvg);
+
+    // Convert to Blob
+    return fetch(dataURL).then((res) => res.blob());
+  }
+
   static createPreview(container) {
     const width = container.clientWidth;
     const height = container.clientHeight;
