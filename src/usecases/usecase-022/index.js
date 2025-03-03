@@ -547,7 +547,7 @@ export default class GeometryShowcase022 extends UseCaseBase {
   }
 
   static getThumbnailBlob() {
-    // シンプルなSVGデータ（明るい色に更新）
+    // シンプルなSVGデータ（アニメーションなし）
     const svgString = `
       <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
         <rect width="200" height="200" fill="#111122"/>
@@ -565,7 +565,7 @@ export default class GeometryShowcase022 extends UseCaseBase {
           
           <!-- トンネルを構成する円柱を表現 -->
           <g>
-            <!-- 外側の輪（より明るい色に） -->
+            <!-- 外側の輪 -->
             <circle cx="60" cy="0" r="5" fill="#6666ff"/>
             <circle cx="42.4" cy="42.4" r="5" fill="#66ff66"/>
             <circle cx="0" cy="60" r="5" fill="#ff6666"/>
@@ -575,7 +575,7 @@ export default class GeometryShowcase022 extends UseCaseBase {
             <circle cx="0" cy="-60" r="5" fill="#ff6666"/>
             <circle cx="42.4" cy="-42.4" r="5" fill="#66ffff"/>
             
-            <!-- 中間の輪（より明るい色に） -->
+            <!-- 中間の輪 -->
             <circle cx="40" cy="0" r="4" fill="#6666ff" opacity="0.8"/>
             <circle cx="28.3" cy="28.3" r="4" fill="#66ff66" opacity="0.8"/>
             <circle cx="0" cy="40" r="4" fill="#ff6666" opacity="0.8"/>
@@ -585,7 +585,7 @@ export default class GeometryShowcase022 extends UseCaseBase {
             <circle cx="0" cy="-40" r="4" fill="#ff6666" opacity="0.8"/>
             <circle cx="28.3" cy="-28.3" r="4" fill="#66ffff" opacity="0.8"/>
             
-            <!-- 内側の輪（より明るい色に） -->
+            <!-- 内側の輪 -->
             <circle cx="20" cy="0" r="3" fill="#6666ff" opacity="0.7"/>
             <circle cx="14.1" cy="14.1" r="3" fill="#66ff66" opacity="0.7"/>
             <circle cx="0" cy="20" r="3" fill="#ff6666" opacity="0.7"/>
@@ -596,22 +596,14 @@ export default class GeometryShowcase022 extends UseCaseBase {
             <circle cx="14.1" cy="-14.1" r="3" fill="#66ffff" opacity="0.7"/>
           </g>
           
-          <!-- 中心の光源（より明るく） -->
-          <circle cx="0" cy="0" r="6" fill="white">
-            <animate attributeName="opacity" values="0.5;1.0;0.5" dur="2s" repeatCount="indefinite" />
-          </circle>
+          <!-- 中心の光源 -->
+          <circle cx="0" cy="0" r="6" fill="white" opacity="0.8"/>
           
-          <!-- 黄色い球体（マーカー） -->
-          <circle cx="40" cy="0" r="6" fill="#ffff00">
-            <animate attributeName="cx" values="60;42.4;0;-42.4;-60;-42.4;0;42.4;60" dur="10s" repeatCount="indefinite" />
-            <animate attributeName="cy" values="0;42.4;60;42.4;0;-42.4;-60;-42.4;0" dur="10s" repeatCount="indefinite" />
-          </circle>
+          <!-- 黄色い球体（マーカー）- 固定位置 -->
+          <circle cx="40" cy="0" r="6" fill="#ffff00"/>
           
-          <!-- カメラ（マーカーの後ろに配置） -->
-          <circle cx="50" cy="-5" r="3" fill="#ffffff" opacity="0.7">
-            <animate attributeName="cx" values="70;52.4;10;-32.4;-50;-32.4;10;52.4;70" dur="10s" repeatCount="indefinite" />
-            <animate attributeName="cy" values="-5;37.4;55;37.4;-5;-47.4;-65;-47.4;-5" dur="10s" repeatCount="indefinite" />
-          </circle>
+          <!-- カメラ（マーカーの後ろに配置）- 固定位置 -->
+          <circle cx="50" cy="-5" r="3" fill="#ffffff" opacity="0.7"/>
         </g>
       </svg>
     `;
