@@ -136,8 +136,16 @@ export default class GeometryShowcase013 extends UseCaseBase {
     const encodedSvg = unescape(encodeURIComponent(svgString));
     const dataURL = "data:image/svg+xml;base64," + btoa(encodedSvg);
 
-    // Convert to Blob
-    return fetch(dataURL).then((res) => res.blob());
+    // 明示的に Promise を返す
+    return new Promise((resolve, reject) => {
+      fetch(dataURL)
+        .then((response) => response.blob())
+        .then((blob) => resolve(blob))
+        .catch((error) => {
+          console.error("Error creating thumbnail blob:", error);
+          reject(error);
+        });
+    });
   }
 
   static createPreview(container) {

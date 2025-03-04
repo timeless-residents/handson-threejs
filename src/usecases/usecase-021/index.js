@@ -2,33 +2,39 @@ import { UseCaseBase } from "../../core/UseCaseBase";
 import * as THREE from "three";
 
 // ねじれたキャンディスティックを作成する関数（モジュールレベルで定義）
-function createTwistedCandyStick(color1, color2, twistCount = 8, radius = 0.3, height = 4) {
+function createTwistedCandyStick(
+  color1,
+  color2,
+  twistCount = 8,
+  radius = 0.3,
+  height = 4
+) {
   const group = new THREE.Group();
-  
+
   // 基本の円柱形状を作成（セグメント数を多めにして滑らかに）
   const geometry = new THREE.CylinderGeometry(
-    radius,           // 上部の半径
-    radius,           // 下部の半径
-    height,           // 高さ
-    32,               // 円周方向の分割数
+    radius, // 上部の半径
+    radius, // 下部の半径
+    height, // 高さ
+    32, // 円周方向の分割数
     Math.max(64, twistCount * 8), // 高さ方向の分割数（ツイスト数に比例）
-    false             // 側面のみ（底面なし）
+    false // 側面のみ（底面なし）
   );
-  
+
   // 頂点位置を取得して変形を適用
   const positionAttribute = geometry.attributes.position;
   const vertex = new THREE.Vector3();
-  
+
   // 縞模様を作るために、各頂点に色を割り当てる
   const colors = [];
 
   for (let i = 0; i < positionAttribute.count; i++) {
     // 現在の頂点の座標を取得
     vertex.fromBufferAttribute(positionAttribute, i);
-    
+
     // 頂点のY座標を正規化（-0.5から0.5の範囲に）
     const normalizedY = vertex.y / height;
-    
+
     // ツイストの角度を計算（Y座標によって変わる）
     // 中央付近でよりねじれるようにする
     let twistFactor;
@@ -39,76 +45,92 @@ function createTwistedCandyStick(color1, color2, twistCount = 8, radius = 0.3, h
       // 端の部分はあまりねじらない
       twistFactor = 0;
     }
-    
+
     // ツイストを適用
     const x = vertex.x;
     const z = vertex.z;
     const cosTheta = Math.cos(twistFactor);
     const sinTheta = Math.sin(twistFactor);
-    
+
     vertex.x = x * cosTheta - z * sinTheta;
     vertex.z = x * sinTheta + z * cosTheta;
-    
+
     // 変形した座標を設定
     positionAttribute.setXYZ(i, vertex.x, vertex.y, vertex.z);
-    
+
     // 縞模様のために色を決定（角度に基づく）
     const angle = Math.atan2(vertex.z, vertex.x);
     const normalizedAngle = (angle + Math.PI) / (Math.PI * 2); // 0～1に正規化
-    
+
     // ツイストに合わせた縞模様
     const adjustedAngle = normalizedAngle + twistFactor / (Math.PI * 2);
     const colorIndex = Math.floor(adjustedAngle * 12) % 2; // 6分割して交互に色を変える
-    
+
     // 色を設定
     if (colorIndex === 0) {
       colors.push(
-        (color1 >> 16 & 255) / 255,
-        (color1 >> 8 & 255) / 255,
+        ((color1 >> 16) & 255) / 255,
+        ((color1 >> 8) & 255) / 255,
         (color1 & 255) / 255
       );
     } else {
       colors.push(
-        (color2 >> 16 & 255) / 255,
-        (color2 >> 8 & 255) / 255,
+        ((color2 >> 16) & 255) / 255,
+        ((color2 >> 8) & 255) / 255,
         (color2 & 255) / 255
       );
     }
   }
-  
+
   // BufferAttributeとして色を設定
-  geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-  
+  geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
+
   // 法線を再計算
   geometry.computeVertexNormals();
-  
+
   // 頂点カラーを使用するマテリアル
   const material = new THREE.MeshStandardMaterial({
     vertexColors: true,
     roughness: 0.3,
     metalness: 0.3,
   });
-  
+
   // メッシュを作成
   const candyStick = new THREE.Mesh(geometry, material);
   candyStick.castShadow = true;
   candyStick.receiveShadow = true;
-  
+
   // 両端に半球を追加して丸くする
-  const sphereGeometryTop = new THREE.SphereGeometry(radius, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2);
+  const sphereGeometryTop = new THREE.SphereGeometry(
+    radius,
+    32,
+    16,
+    0,
+    Math.PI * 2,
+    0,
+    Math.PI / 2
+  );
   const sphereTop = new THREE.Mesh(sphereGeometryTop, material.clone());
   sphereTop.position.y = height / 2;
   sphereTop.rotation.x = Math.PI;
-  
-  const sphereGeometryBottom = new THREE.SphereGeometry(radius, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2);
+
+  const sphereGeometryBottom = new THREE.SphereGeometry(
+    radius,
+    32,
+    16,
+    0,
+    Math.PI * 2,
+    0,
+    Math.PI / 2
+  );
   const sphereBottom = new THREE.Mesh(sphereGeometryBottom, material.clone());
   sphereBottom.position.y = -height / 2;
-  
+
   // グループに追加
   group.add(candyStick);
   group.add(sphereTop);
   group.add(sphereBottom);
-  
+
   return group;
 }
 
@@ -131,7 +153,7 @@ export default class GeometryShowcase021 extends UseCaseBase {
   static setupScene(scene) {
     // シーンの背景色を設定（明るい色）
     scene.background = new THREE.Color(0xf0f0f0);
-    
+
     const objects = [];
     const geometries = [];
 
@@ -169,12 +191,16 @@ export default class GeometryShowcase021 extends UseCaseBase {
       const radius = 3;
       const x = Math.cos(angle) * radius;
       const z = Math.sin(angle) * radius;
-      
-      const candyStick = createTwistedCandyStick(colors[i][0], colors[i][1], 8 + i);
+
+      const candyStick = createTwistedCandyStick(
+        colors[i][0],
+        colors[i][1],
+        8 + i
+      );
       candyStick.position.set(x, 0, z);
       candyStick.rotation.x = Math.PI / 8; // 少し傾ける
       candyStick.rotation.y = angle + Math.PI / 2; // キャンディを外側に向ける
-      
+
       scene.add(candyStick);
       objects.push(candyStick);
       candySticks.push(candyStick);
@@ -188,10 +214,10 @@ export default class GeometryShowcase021 extends UseCaseBase {
     objects.push(centerCandy);
     candySticks.push(centerCandy);
 
-    return { 
-      objects, 
+    return {
+      objects,
       geometries,
-      candySticks
+      candySticks,
     };
   }
 
@@ -200,7 +226,7 @@ export default class GeometryShowcase021 extends UseCaseBase {
     for (let i = 0; i < objects.length; i++) {
       const obj = objects[i];
       if (!obj || !obj.rotation) continue;
-      
+
       // キャンディスティックっぽいオブジェクトは回転させる
       if (obj.isMesh || obj.isGroup) {
         // 中央に近いオブジェクトは逆方向に回転
@@ -209,8 +235,8 @@ export default class GeometryShowcase021 extends UseCaseBase {
         } else {
           // 外周のオブジェクトはゆらゆら揺れる
           const angle = Math.atan2(obj.position.z, obj.position.x);
-          obj.rotation.y = angle + Math.PI/2 + Math.sin(time * 0.3 + i) * 0.1;
-          
+          obj.rotation.y = angle + Math.PI / 2 + Math.sin(time * 0.3 + i) * 0.1;
+
           // 上下に揺らす
           obj.position.y = Math.sin(time * 0.5 + i * 0.7) * 0.2;
         }
@@ -226,15 +252,12 @@ export default class GeometryShowcase021 extends UseCaseBase {
 
   update(deltaTime) {
     this.time += deltaTime * this.rotationSpeed;
-    GeometryShowcase021.updateObjects(
-      Array.from(this.objects),
-      this.time
-    );
+    GeometryShowcase021.updateObjects(Array.from(this.objects), this.time);
   }
 
   static getThumbnailCameraPosition() {
     return {
-      position: [6, 4, 6], 
+      position: [6, 4, 6],
       target: [0, 0, 0],
     };
   }
@@ -289,7 +312,7 @@ export default class GeometryShowcase021 extends UseCaseBase {
       },
     };
   }
-  
+
   static getThumbnailBlob() {
     // シンプルなSVGデータ - パターン参照なしに直接色を使用
     const svgString = `
@@ -328,8 +351,16 @@ export default class GeometryShowcase021 extends UseCaseBase {
     // Unicode対応のためのエンコード
     const encodedSvg = unescape(encodeURIComponent(svgString));
     const dataURL = "data:image/svg+xml;base64," + btoa(encodedSvg);
-    
-    // Promiseを確実に返す
-    return fetch(dataURL).then(res => res.blob());
+
+    // 明示的に Promise を返す
+    return new Promise((resolve, reject) => {
+      fetch(dataURL)
+        .then((response) => response.blob())
+        .then((blob) => resolve(blob))
+        .catch((error) => {
+          console.error("Error creating thumbnail blob:", error);
+          reject(error);
+        });
+    });
   }
 }

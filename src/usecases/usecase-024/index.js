@@ -322,7 +322,7 @@ export default class GeometryShowcase024 extends UseCaseBase {
   }
 
   static getThumbnailBlob() {
-    console.log("WipeTransitionSequencer.generateThumbnail が呼ばれました");
+    console.log("CupLikeObject.getThumbnailBlob が呼ばれました");
     // SVGデータ - コップ風オブジェクトを表現
     const svgString = `
       <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
@@ -358,7 +358,15 @@ export default class GeometryShowcase024 extends UseCaseBase {
     const encodedSvg = unescape(encodeURIComponent(svgString));
     const dataURL = "data:image/svg+xml;base64," + btoa(encodedSvg);
 
-    // Promiseを確実に返す
-    return fetch(dataURL).then((res) => res.blob());
+    // 明示的に Promise を返す
+    return new Promise((resolve, reject) => {
+      fetch(dataURL)
+        .then((response) => response.blob())
+        .then((blob) => resolve(blob))
+        .catch((error) => {
+          console.error("Error creating thumbnail blob:", error);
+          reject(error);
+        });
+    });
   }
 }

@@ -356,6 +356,23 @@ export default class GeometryShowcase025 extends UseCaseBase {
     };
   }
 
+  // Helper function to load textures asynchronously
+  static loadTextureAsync(url) {
+    return new Promise((resolve, reject) => {
+      const loader = new THREE.TextureLoader();
+      loader.load(
+        url,
+        (texture) => {
+          texture.minFilter = THREE.LinearFilter;
+          texture.magFilter = THREE.LinearFilter;
+          resolve(texture);
+        },
+        undefined,
+        reject
+      );
+    });
+  }
+
   static async generateThumbnail(width = 200, height = 200) {
     // オフスクリーンレンダラーの作成
     const renderer = new THREE.WebGLRenderer({
@@ -387,10 +404,10 @@ export default class GeometryShowcase025 extends UseCaseBase {
     }
 
     // テクスチャを非同期で読み込む
-    const placeholderA = await loadTextureAsync(
+    const placeholderA = await this.loadTextureAsync(
       "https://picsum.photos/id/10/800/450"
     );
-    const placeholderB = await loadTextureAsync(
+    const placeholderB = await this.loadTextureAsync(
       "https://picsum.photos/id/20/800/450"
     );
 
@@ -468,23 +485,15 @@ export default class GeometryShowcase025 extends UseCaseBase {
     const encodedSvg = unescape(encodeURIComponent(svgString));
     const dataURL = "data:image/svg+xml;base64," + btoa(encodedSvg);
 
-    // Promiseを確実に返す
-    return fetch(dataURL).then((res) => res.blob());
+    // 明示的に Promise を返す
+    return new Promise((resolve, reject) => {
+      fetch(dataURL)
+        .then((response) => response.blob())
+        .then((blob) => resolve(blob))
+        .catch((error) => {
+          console.error("Error creating thumbnail blob:", error);
+          reject(error);
+        });
+    });
   }
-}
-
-function loadTextureAsync(url) {
-  return new Promise((resolve, reject) => {
-    const loader = new THREE.TextureLoader();
-    loader.load(
-      url,
-      (texture) => {
-        texture.minFilter = THREE.LinearFilter;
-        texture.magFilter = THREE.LinearFilter;
-        resolve(texture);
-      },
-      undefined,
-      reject
-    );
-  });
 }
